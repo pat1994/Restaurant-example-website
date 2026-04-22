@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brasa — Restaurante</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:#f5f0e8;--cream-dark:#ede6d6;--charcoal:#1e1a16;--charcoal-mid:#2d2720;
+    --terra:#c4522a;--terra-light:#d9735a;--burgundy:#6b2737;
+    --warm-white:#faf7f2;--text:#3a3028;--text-light:#7a6e62;--subtle:rgba(196,82,42,0.12);
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--warm-white);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;}
+
+  .lang-bar{position:fixed;top:0;right:0;z-index:200;display:flex;padding:16px 48px 0 0;}
+  .lang-btn{background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.62rem;letter-spacing:.2em;color:var(--text-light);opacity:.7;padding:5px 8px;text-transform:uppercase;transition:opacity .3s,color .3s;}
+  .lang-btn.active{opacity:1;color:var(--terra);font-weight:500;}
+  .lang-sep{color:var(--text-light);opacity:.4;line-height:2.2;font-size:.65rem;}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:28px 48px;transition:all .4s;}
+  nav.scrolled{background:rgba(245,240,232,.97);backdrop-filter:blur(12px);padding:18px 48px;border-bottom:1px solid rgba(196,82,42,.15);box-shadow:0 2px 20px rgba(30,26,22,.06);}
+  .logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;font-style:italic;color:var(--charcoal);text-decoration:none;}
+  .logo span{color:var(--terra);}
+  .nav-links{display:flex;gap:36px;list-style:none;align-items:center;}
+  .nav-links a{color:var(--text);text-decoration:none;font-size:.78rem;letter-spacing:.1em;font-weight:400;transition:color .3s;}
+  .nav-links a:hover{color:var(--terra);}
+  .nav-reserve{background:var(--terra);color:#fff!important;padding:10px 24px;font-size:.72rem!important;letter-spacing:.12em;text-transform:uppercase;transition:background .3s!important;}
+  .nav-reserve:hover{background:var(--burgundy)!important;}
+
+  .hero{height:100vh;min-height:680px;position:relative;display:flex;align-items:center;overflow:hidden;}
+  .hero-bg{
+    position:absolute;inset:0;
+    /* HERO IMAGE: replace with: background: linear-gradient(105deg,rgba(30,26,22,.8) 0%,rgba(30,26,22,.35) 60%,transparent 100%), url('images/hero.jpg') center/cover no-repeat; */
+    background:linear-gradient(105deg,rgba(30,26,22,.9) 0%,rgba(30,26,22,.5) 55%,rgba(92,46,26,.7) 100%),radial-gradient(ellipse at 70% 50%,#5c2e1a 0%,#1e1a16 70%);
+  }
+  .hero-content{position:relative;z-index:2;padding:0 48px;max-width:700px;}
+  .hero-tag{display:inline-flex;align-items:center;gap:12px;font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--terra-light);margin-bottom:28px;}
+  .hero-tag::before{content:'';width:32px;height:1px;background:var(--terra-light);display:block;}
+  .hero h1{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,8vw,7rem);font-weight:400;line-height:1;color:var(--warm-white);margin-bottom:12px;}
+  .hero h1 em{font-style:italic;color:var(--terra-light);display:block;}
+  .hero-sub{font-size:.9rem;line-height:1.8;color:rgba(250,247,242,.7);max-width:420px;margin:24px 0 48px;}
+  .hero-actions{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+  .btn-terra{background:var(--terra);color:#fff;padding:16px 40px;text-decoration:none;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:500;transition:background .3s,transform .2s;display:inline-block;}
+  .btn-terra:hover{background:var(--burgundy);transform:translateY(-1px);}
+  .btn-ghost-light{color:var(--warm-white);text-decoration:none;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;border-bottom:1px solid rgba(250,247,242,.4);padding-bottom:3px;transition:color .3s,border-color .3s;}
+  .btn-ghost-light:hover{color:var(--terra-light);border-color:var(--terra-light);}
+
+  .intro-strip{background:var(--charcoal);display:flex;}
+  .intro-item{flex:1;padding:44px 40px;text-align:center;border-right:1px solid rgba(245,240,232,.08);}
+  .intro-item:last-child{border-right:none;}
+  .intro-item .i-num{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:400;color:var(--terra);display:block;line-height:1;}
+  .intro-item .i-label{font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;opacity:.45;margin-top:8px;display:block;color:var(--cream);}
+
+  .story{padding:120px 48px;background:var(--warm-white);}
+  .story-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1200px;margin:0 auto;}
+  .story-img{position:relative;height:560px;overflow:visible;}
+  .story-img-placeholder{width:100%;height:100%;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--terra);opacity:.5;}
+  /* STORY IMAGE: replace placeholder with <img src="images/story.jpg" style="width:100%;height:100%;object-fit:cover"> */
+  .story-img-accent{position:absolute;bottom:-24px;right:-24px;width:160px;height:160px;background:var(--terra);z-index:2;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;}
+  .story-img-accent .year{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;line-height:1;}
+  .story-img-accent .since{font-size:.55rem;letter-spacing:.3em;color:rgba(255,255,255,.7);text-transform:uppercase;}
+  .story-text{padding-right:20px;}
+  .section-tag{font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--terra);display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+  .section-tag::before{content:'';width:28px;height:1px;background:var(--terra);display:block;}
+  .story-text h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;line-height:1.15;color:var(--charcoal);margin-bottom:28px;}
+  .story-text h2 em{font-style:italic;color:var(--terra);}
+  .story-text p{font-size:.9rem;line-height:1.9;color:var(--text-light);margin-bottom:20px;}
+  .chef-sig{margin-top:36px;padding-top:36px;border-top:1px solid var(--subtle);display:flex;align-items:center;gap:20px;}
+  .chef-avatar{width:56px;height:56px;border-radius:50%;background:var(--cream-dark);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+  /* CHEF PHOTO: replace content with <img src="images/chef.jpg" style="width:100%;height:100%;object-fit:cover"> */
+  .chef-info .name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;color:var(--charcoal);}
+  .chef-info .title{font-size:.68rem;letter-spacing:.1em;color:var(--terra);margin-top:2px;}
+
+  .menu{padding:120px 48px;background:var(--cream);}
+  .menu-header{text-align:center;max-width:600px;margin:0 auto 72px;}
+  .menu-header h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:400;color:var(--charcoal);line-height:1.1;margin-bottom:16px;}
+  .menu-header h2 em{font-style:italic;color:var(--terra);}
+  .menu-header p{font-size:.85rem;line-height:1.8;color:var(--text-light);}
+  .menu-tabs{display:flex;justify-content:center;margin-bottom:56px;border-bottom:1px solid rgba(196,82,42,.2);}
+  .menu-tab{background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-light);padding:14px 32px;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .3s;}
+  .menu-tab.active{color:var(--terra);border-bottom-color:var(--terra);font-weight:500;}
+  .menu-tab:hover{color:var(--terra);}
+  .menu-panel{display:none;}
+  .menu-panel.active{display:block;}
+  .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:rgba(196,82,42,.1);max-width:1100px;margin:0 auto;}
+  .menu-item{background:var(--warm-white);padding:32px 36px;display:flex;gap:24px;align-items:flex-start;transition:background .3s;}
+  .menu-item:hover{background:var(--cream-dark);}
+  .menu-item-img-ph{width:90px;height:90px;flex-shrink:0;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+  /* FOOD IMAGE: replace menu-item-img-ph with <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-X.jpg" style="width:100%;height:100%;object-fit:cover"></div> */
+  .menu-item-body{flex:1;}
+  .menu-item-body h4{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;color:var(--charcoal);margin-bottom:6px;}
+  .menu-item-body p{font-size:.75rem;line-height:1.7;color:var(--text-light);margin-bottom:12px;}
+  .menu-item-footer{display:flex;justify-content:space-between;align-items:center;}
+  .menu-price{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--terra);}
+  .menu-tag-label{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);border:1px solid rgba(122,110,98,.25);padding:3px 10px;}
+
+  .ambience{padding:120px 48px;background:var(--warm-white);}
+  .ambience-header{margin-bottom:56px;max-width:600px;}
+  .ambience-header h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:400;color:var(--charcoal);line-height:1.1;}
+  .ambience-header h2 em{font-style:italic;color:var(--terra);}
+  .ambience-header p{font-size:.85rem;line-height:1.8;color:var(--text-light);margin-top:16px;}
+  .ambience-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;grid-template-rows:300px 300px;gap:4px;max-width:1200px;}
+  .amb-img{overflow:hidden;position:relative;}
+  .amb-img:first-child{grid-row:span 2;}
+  /* AMBIENCE IMAGES: replace .amb-img-ph with <img src="images/amb-X.jpg" style="width:100%;height:100%;object-fit:cover"> */
+  .amb-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--terra);opacity:.5;transition:opacity .3s;}
+  .amb-img:nth-child(1) .amb-img-ph{background:#d4c5b0;}
+  .amb-img:nth-child(2) .amb-img-ph{background:#c9b89a;}
+  .amb-img:nth-child(3) .amb-img-ph{background:#bfaa8a;}
+  .amb-img:nth-child(4) .amb-img-ph{background:#c4ae90;}
+  .amb-img:nth-child(5) .amb-img-ph{background:#b8a07a;}
+  .amb-img:hover .amb-img-ph{opacity:.7;}
+
+  .reserve{padding:120px 48px;background:var(--charcoal);position:relative;overflow:hidden;}
+  .reserve::before{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(196,82,42,.15) 0%,transparent 70%);}
+  .reserve-inner{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:start;max-width:1100px;margin:0 auto;position:relative;z-index:1;}
+  .reserve-text .section-tag{color:var(--terra-light);}
+  .reserve-text .section-tag::before{background:var(--terra-light);}
+  .reserve-text h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--cream);line-height:1.15;margin-bottom:20px;}
+  .reserve-text h2 em{font-style:italic;color:var(--terra-light);}
+  .reserve-text p{font-size:.85rem;line-height:1.8;color:rgba(245,240,232,.55);}
+  .reserve-hours{margin-top:36px;display:flex;flex-direction:column;}
+  .hour-row{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid rgba(245,240,232,.08);}
+  .hour-row .day{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.45);}
+  .hour-row .time{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--cream);}
+  .reserve-form-wrap{background:var(--cream);padding:48px;}
+  .form-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:600;color:var(--charcoal);margin-bottom:32px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  .form-field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+  .form-field label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-light);}
+  .form-field input,.form-field select,.form-field textarea{background:var(--warm-white);border:1px solid rgba(196,82,42,.2);color:var(--charcoal);padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;transition:border-color .3s;appearance:none;}
+  .form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--terra);}
+  .form-field textarea{min-height:80px;resize:vertical;}
+  .form-submit{width:100%;background:var(--terra);border:none;cursor:pointer;padding:18px;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:#fff;font-weight:500;margin-top:8px;transition:background .3s;}
+  .form-submit:hover{background:var(--burgundy);}
+
+  .location-section{padding:120px 48px;background:var(--cream);}
+  .location-inner{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:rgba(196,82,42,.12);max-width:1100px;margin:56px auto 0;}
+  .loc-info{background:var(--charcoal-mid);padding:64px 56px;color:var(--cream);display:flex;flex-direction:column;gap:36px;}
+  .loc-detail{display:flex;flex-direction:column;gap:8px;}
+  .loc-label{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--terra-light);}
+  .loc-value{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;color:var(--cream);line-height:1.5;}
+  .loc-value a{color:var(--terra-light);text-decoration:none;}
+  .loc-map{background:var(--cream-dark);min-height:400px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  /* MAP: replace with embedded Google Maps iframe */
+  .loc-map::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(196,82,42,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(196,82,42,.06) 1px,transparent 1px);background-size:36px 36px;}
+  .map-dot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:14px;height:14px;background:var(--terra);border-radius:50%;box-shadow:0 0 0 8px rgba(196,82,42,.2),0 0 0 20px rgba(196,82,42,.08);z-index:2;}
+  .map-ph{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--terra);opacity:.45;position:relative;z-index:1;}
+
+  footer{background:var(--charcoal);padding:64px 48px 36px;color:var(--cream);}
+  .footer-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:56px;margin-bottom:56px;}
+  .footer-brand .logo{display:block;margin-bottom:16px;color:var(--cream);}
+  .footer-brand p{font-size:.78rem;line-height:1.8;opacity:.45;max-width:260px;}
+  .footer-col h5{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--terra);margin-bottom:20px;}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+  .footer-col ul a{color:rgba(245,240,232,.55);text-decoration:none;font-size:.78rem;transition:color .3s;}
+  .footer-col ul a:hover{color:var(--terra-light);}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid rgba(245,240,232,.08);}
+  .footer-bottom p{font-size:.62rem;opacity:.3;}
+  .footer-socials{display:flex;gap:16px;}
+  .footer-socials a{width:36px;height:36px;border:1px solid rgba(245,240,232,.12);display:flex;align-items:center;justify-content:center;color:rgba(245,240,232,.4);text-decoration:none;font-size:.68rem;transition:all .3s;}
+  .footer-socials a:hover{border-color:var(--terra);color:var(--terra);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .hero-content>*{animation:fadeUp .8s ease both;}
+  .hero-content>*:nth-child(1){animation-delay:.1s;}
+  .hero-content>*:nth-child(2){animation-delay:.25s;}
+  .hero-content>*:nth-child(3){animation-delay:.4s;}
+  .hero-content>*:nth-child(4){animation-delay:.55s;}
+
+  @media(max-width:900px){
+    nav{padding:20px 24px;} .lang-bar{padding:16px 24px 0 0;} .nav-links{display:none;}
+    .hero-content{padding:0 24px;}
+    .story,.menu,.ambience,.reserve,.location-section{padding:80px 24px;}
+    .story-inner,.reserve-inner,.location-inner{grid-template-columns:1fr;gap:40px;}
+    .story-img{height:360px;} .story-img-accent{display:none;}
+    .menu-grid{grid-template-columns:1fr;}
+    .ambience-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto;}
+    .ambience-grid .amb-img:first-child{grid-row:span 1;grid-column:span 2;height:280px;}
+    .ambience-grid .amb-img{height:200px;}
+    .intro-strip{flex-wrap:wrap;} .intro-item{min-width:50%;}
+    .footer-top{grid-template-columns:1fr 1fr;gap:36px;}
+    .form-row{grid-template-columns:1fr;}
+    .reserve-form-wrap{padding:32px 24px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('en')">EN</button>
+  <span class="lang-sep">·</span>
+  <button class="lang-btn" onclick="setLang('de')">DE</button>
+  <span class="lang-sep">·</span>
+  <button class="lang-btn" onclick="setLang('es')">ES</button>
+</div>
+
+<nav id="mainNav">
+  <a href="#" class="logo">Br<span>a</span>sa</a>
+  <ul class="nav-links">
+    <li><a href="#menu" data-i18n="nav.menu"></a></li>
+    <li><a href="#story" data-i18n="nav.story"></a></li>
+    <li><a href="#ambience" data-i18n="nav.ambience"></a></li>
+    <li><a href="#reserve" class="nav-reserve" data-i18n="nav.reserve"></a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <span class="hero-tag" data-i18n="hero.tag"></span>
+    <h1><span data-i18n="hero.h1a"></span><em data-i18n="hero.h1b"></em></h1>
+    <p class="hero-sub" data-i18n="hero.sub"></p>
+    <div class="hero-actions">
+      <a href="#reserve" class="btn-terra" data-i18n="hero.cta1"></a>
+      <a href="#menu" class="btn-ghost-light" data-i18n="hero.cta2"></a>
+    </div>
+  </div>
+</section>
+
+<div class="intro-strip">
+  <div class="intro-item"><span class="i-num">2011</span><span class="i-label" data-i18n="stats.est"></span></div>
+  <div class="intro-item"><span class="i-num">3</span><span class="i-label" data-i18n="stats.michelin"></span></div>
+  <div class="intro-item"><span class="i-num">18</span><span class="i-label" data-i18n="stats.dishes"></span></div>
+  <div class="intro-item"><span class="i-num">100%</span><span class="i-label" data-i18n="stats.local"></span></div>
+</div>
+
+<section class="story" id="story">
+  <div class="story-inner">
+    <div class="story-img">
+      <!-- SWAP: <img src="images/story.jpg" alt="Chef at the hearth" style="width:100%;height:100%;object-fit:cover"> -->
+      <div class="story-img-placeholder">Photo · Story</div>
+      <div class="story-img-accent">
+        <span class="year">13</span>
+        <span class="since" data-i18n="story.years"></span>
+      </div>
+    </div>
+    <div class="story-text">
+      <p class="section-tag" data-i18n="story.tag"></p>
+      <h2><span data-i18n="story.h2a"></span> <em data-i18n="story.h2b"></em></h2>
+      <p data-i18n="story.p1"></p>
+      <p data-i18n="story.p2"></p>
+      <div class="chef-sig">
+        <div class="chef-avatar">
+          <!-- SWAP: <img src="images/chef.jpg" style="width:100%;height:100%;object-fit:cover"> -->
+          👨‍🍳
+        </div>
+        <div class="chef-info">
+          <div class="name" data-i18n="chef.name"></div>
+          <div class="title" data-i18n="chef.title"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="menu-header">
+    <p class="section-tag" style="justify-content:center" data-i18n="menu.tag"></p>
+    <h2><span data-i18n="menu.h2a"></span> <em data-i18n="menu.h2b"></em></h2>
+    <p data-i18n="menu.sub"></p>
+  </div>
+  <div class="menu-tabs">
+    <button class="menu-tab active" onclick="setTab('starters')" data-i18n="menu.tab1"></button>
+    <button class="menu-tab" onclick="setTab('mains')" data-i18n="menu.tab2"></button>
+    <button class="menu-tab" onclick="setTab('desserts')" data-i18n="menu.tab3"></button>
+  </div>
+  <div class="menu-panel active" id="panel-starters">
+    <div class="menu-grid">
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-s1.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🍅</div>
+        <div class="menu-item-body"><h4 data-i18n="s1.name"></h4><p data-i18n="s1.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="s1.price"></span><span class="menu-tag-label" data-i18n="tag.veg"></span></div></div>
+      </div>
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-s2.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🦑</div>
+        <div class="menu-item-body"><h4 data-i18n="s2.name"></h4><p data-i18n="s2.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="s2.price"></span><span class="menu-tag-label" data-i18n="tag.seafood"></span></div></div>
+      </div>
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-s3.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🧀</div>
+        <div class="menu-item-body"><h4 data-i18n="s3.name"></h4><p data-i18n="s3.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="s3.price"></span><span class="menu-tag-label" data-i18n="tag.sharing"></span></div></div>
+      </div>
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-s4.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🥗</div>
+        <div class="menu-item-body"><h4 data-i18n="s4.name"></h4><p data-i18n="s4.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="s4.price"></span><span class="menu-tag-label" data-i18n="tag.veg"></span></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="menu-panel" id="panel-mains">
+    <div class="menu-grid">
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-m1.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🥩</div>
+        <div class="menu-item-body"><h4 data-i18n="m1.name"></h4><p data-i18n="m1.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="m1.price"></span><span class="menu-tag-label" data-i18n="tag.signature"></span></div></div>
+      </div>
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-m2.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🐟</div>
+        <div class="menu-item-body"><h4 data-i18n="m2.name"></h4><p data-i18n="m2.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="m2.price"></span><span class="menu-tag-label" data-i18n="tag.seafood"></span></div></div>
+      </div>
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-m3.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🍗</div>
+        <div class="menu-item-body"><h4 data-i18n="m3.name"></h4><p data-i18n="m3.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="m3.price"></span><span class="menu-tag-label" data-i18n="tag.seasonal"></span></div></div>
+      </div>
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-m4.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🥦</div>
+        <div class="menu-item-body"><h4 data-i18n="m4.name"></h4><p data-i18n="m4.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="m4.price"></span><span class="menu-tag-label" data-i18n="tag.veg"></span></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="menu-panel" id="panel-desserts">
+    <div class="menu-grid">
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-d1.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🍮</div>
+        <div class="menu-item-body"><h4 data-i18n="d1.name"></h4><p data-i18n="d1.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="d1.price"></span><span class="menu-tag-label" data-i18n="tag.classic"></span></div></div>
+      </div>
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-d2.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🍫</div>
+        <div class="menu-item-body"><h4 data-i18n="d2.name"></h4><p data-i18n="d2.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="d2.price"></span><span class="menu-tag-label" data-i18n="tag.signature"></span></div></div>
+      </div>
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-d3.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🍨</div>
+        <div class="menu-item-body"><h4 data-i18n="d3.name"></h4><p data-i18n="d3.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="d3.price"></span><span class="menu-tag-label" data-i18n="tag.seasonal"></span></div></div>
+      </div>
+      <div class="menu-item">
+        <!-- SWAP: <div style="width:90px;height:90px;flex-shrink:0;overflow:hidden"><img src="images/dish-d4.jpg" style="width:100%;height:100%;object-fit:cover"></div> -->
+        <div class="menu-item-img-ph">🧇</div>
+        <div class="menu-item-body"><h4 data-i18n="d4.name"></h4><p data-i18n="d4.desc"></p><div class="menu-item-footer"><span class="menu-price" data-i18n="d4.price"></span><span class="menu-tag-label" data-i18n="tag.sharing"></span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ambience" id="ambience">
+  <div class="ambience-header">
+    <p class="section-tag" data-i18n="amb.tag"></p>
+    <h2><span data-i18n="amb.h2a"></span> <em data-i18n="amb.h2b"></em></h2>
+    <p data-i18n="amb.sub"></p>
+  </div>
+  <div class="ambience-grid">
+    <!-- SWAP each amb-img-ph with <img src="images/amb-X.jpg" style="width:100%;height:100%;object-fit:cover"> -->
+    <div class="amb-img"><div class="amb-img-ph">Photo · Interior</div></div>
+    <div class="amb-img"><div class="amb-img-ph">Photo · Bar</div></div>
+    <div class="amb-img"><div class="amb-img-ph">Photo · Terrace</div></div>
+    <div class="amb-img"><div class="amb-img-ph">Photo · Kitchen</div></div>
+    <div class="amb-img"><div class="amb-img-ph">Photo · Detail</div></div>
+  </div>
+</section>
+
+<section class="reserve" id="reserve">
+  <div class="reserve-inner">
+    <div class="reserve-text">
+      <p class="section-tag" data-i18n="res.tag"></p>
+      <h2><span data-i18n="res.h2a"></span> <em data-i18n="res.h2b"></em></h2>
+      <p data-i18n="res.sub"></p>
+      <div class="reserve-hours">
+        <div class="hour-row"><span class="day" data-i18n="hours.mon"></span><span class="time" data-i18n="hours.mon.time"></span></div>
+        <div class="hour-row"><span class="day" data-i18n="hours.tue"></span><span class="time" data-i18n="hours.tue.time"></span></div>
+        <div class="hour-row"><span class="day" data-i18n="hours.fri"></span><span class="time" data-i18n="hours.fri.time"></span></div>
+        <div class="hour-row"><span class="day" data-i18n="hours.sun"></span><span class="time" data-i18n="hours.sun.time"></span></div>
+      </div>
+    </div>
+    <div class="reserve-form-wrap">
+      <div class="form-title" data-i18n="form.title"></div>
+      <div class="form-row">
+        <div class="form-field"><label data-i18n="form.name"></label><input type="text" data-i18n-placeholder="form.name.ph"></div>
+        <div class="form-field"><label data-i18n="form.email"></label><input type="email" data-i18n-placeholder="form.email.ph"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label data-i18n="form.date"></label><input type="text" data-i18n-placeholder="form.date.ph"></div>
+        <div class="form-field"><label data-i18n="form.time"></label><input type="text" data-i18n-placeholder="form.time.ph"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label data-i18n="form.guests"></label><input type="number" min="1" max="20" placeholder="2"></div>
+        <div class="form-field">
+          <label data-i18n="form.occasion"></label>
+          <select>
+            <option data-i18n="form.occ.none"></option>
+            <option data-i18n="form.occ.birthday"></option>
+            <option data-i18n="form.occ.anniversary"></option>
+            <option data-i18n="form.occ.business"></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field"><label data-i18n="form.notes"></label><textarea data-i18n-placeholder="form.notes.ph"></textarea></div>
+      <button class="form-submit" data-i18n="form.submit"></button>
+    </div>
+  </div>
+</section>
+
+<section class="location-section" id="location">
+  <div style="max-width:1100px;margin:0 auto">
+    <p class="section-tag" data-i18n="loc.tag"></p>
+    <h2 style="font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);font-weight:400;color:var(--charcoal);line-height:1.1">
+      <span data-i18n="loc.h2a"></span> <em style="font-style:italic;color:var(--terra)" data-i18n="loc.h2b"></em>
+    </h2>
+  </div>
+  <div class="location-inner">
+    <div class="loc-info">
+      <div class="loc-detail"><span class="loc-label" data-i18n="loc.addr.label"></span><span class="loc-value" data-i18n="loc.addr.value"></span></div>
+      <div class="loc-detail"><span class="loc-label" data-i18n="loc.phone.label"></span><span class="loc-value"><a href="tel:+34910000000">+34 910 000 000</a></span></div>
+      <div class="loc-detail"><span class="loc-label" data-i18n="loc.email.label"></span><span class="loc-value"><a href="mailto:hola@brasarestaurant.com">hola@brasarestaurant.com</a></span></div>
+      <div class="loc-detail"><span class="loc-label" data-i18n="loc.park.label"></span><span class="loc-value" data-i18n="loc.park.value"></span></div>
+    </div>
+    <div class="loc-map">
+      <div class="map-dot"></div>
+      <div class="map-ph" data-i18n="loc.map"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="logo">Br<span>a</span>sa</a>
+      <p data-i18n="footer.about"></p>
+    </div>
+    <div class="footer-col">
+      <h5 data-i18n="footer.c1.title"></h5>
+      <ul><li><a href="#menu" data-i18n="footer.c1.l1"></a></li><li><a href="#menu" data-i18n="footer.c1.l2"></a></li><li><a href="#menu" data-i18n="footer.c1.l3"></a></li><li><a href="#reserve" data-i18n="footer.c1.l4"></a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h5 data-i18n="footer.c2.title"></h5>
+      <ul><li><a href="#story" data-i18n="footer.c2.l1"></a></li><li><a href="#ambience" data-i18n="footer.c2.l2"></a></li><li><a href="#reserve" data-i18n="footer.c2.l3"></a></li><li><a href="#location" data-i18n="footer.c2.l4"></a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h5 data-i18n="footer.c3.title"></h5>
+      <ul><li><a href="#" data-i18n="footer.c3.l1"></a></li><li><a href="#" data-i18n="footer.c3.l2"></a></li><li><a href="#" data-i18n="footer.c3.l3"></a></li></ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p data-i18n="footer.copy"></p>
+    <div class="footer-socials"><a href="#">in</a><a href="#">ig</a><a href="#">fb</a></div>
+  </div>
+</footer>
+
+<script>
+const i18n={
+  en:{
+    "nav.menu":"Menu","nav.story":"Our Story","nav.ambience":"Ambience","nav.reserve":"Reserve a Table",
+    "hero.tag":"Modern Spanish Brasserie · Est. 2011","hero.h1a":"Fire,","hero.h1b":"Flavour & Soul.",
+    "hero.sub":"Rooted in Spanish tradition, refined by a modern hand. Brasa is where the wood fire meets the finest seasonal produce.",
+    "hero.cta1":"Reserve a Table","hero.cta2":"View Menu",
+    "stats.est":"Established","stats.michelin":"Michelin Stars","stats.dishes":"Seasonal Dishes","stats.local":"Local Produce",
+    "story.tag":"Our Story","story.h2a":"Born from","story.h2b":"the embers.",
+    "story.p1":"Brasa began as a simple idea: to honour the Spanish tradition of wood-fire cooking without apology. Our open kitchen, centred around a custom-built stone hearth, is the soul of everything we do.",
+    "story.p2":"Every dish draws from the land — from the olive groves of Andalucía to the fish markets of San Sebastián. We cook with the seasons, never against them.",
+    "story.years":"Years of Fire","chef.name":"Carlos Mendoza","chef.title":"Head Chef & Founder",
+    "menu.tag":"What We Serve","menu.h2a":"The","menu.h2b":"Menu.",
+    "menu.sub":"A menu that changes with the seasons. Always honest, always fired with intention.",
+    "menu.tab1":"Starters","menu.tab2":"Mains","menu.tab3":"Desserts",
+    "s1.name":"Tomate Asado","s1.desc":"Wood-roasted heirloom tomatoes, burrata, basil oil, aged sherry vinegar.","s1.price":"€14",
+    "s2.name":"Calamares a la Brasa","s2.desc":"Chargrilled squid, black garlic aioli, smoked paprika, lemon.","s2.price":"€18",
+    "s3.name":"Tabla Ibérica","s3.desc":"Selection of Iberian cured meats, Manchego, membrillo, sourdough.","s3.price":"€22",
+    "s4.name":"Ensalada de Temporada","s4.desc":"Seasonal leaves, pickled vegetables, toasted almonds, Jerez dressing.","s4.price":"€12",
+    "m1.name":"Chuletón a la Leña","m1.desc":"1kg dry-aged Galician beef rib, roasted bone marrow, chimichurri.","m1.price":"€52",
+    "m2.name":"Lubina al Carbón","m2.desc":"Wood-grilled sea bass, clams, saffron broth, samphire.","m2.price":"€36",
+    "m3.name":"Pollo de Caserío","m3.desc":"Free-range chicken, wood-roasted peppers, confit garlic, patatas bravas.","m3.price":"€28",
+    "m4.name":"Coliflor Asada","m4.desc":"Whole-roasted cauliflower, romesco, hazelnuts, herb oil.","m4.price":"€22",
+    "d1.name":"Crema Catalana","d1.desc":"Classic burnt cream, citrus zest, cinnamon, seasonal fruit.","d1.price":"€10",
+    "d2.name":"Tarta de Chocolate","d2.desc":"Warm dark chocolate tart, smoked salt caramel, crème fraîche.","d2.price":"€12",
+    "d3.name":"Helado de Temporada","d3.desc":"House-churned ice cream, seasonal fruit compote, almond crumble.","d3.price":"€9",
+    "d4.name":"Tabla de Quesos","d4.desc":"Selection of Spanish artisan cheeses, honey, nuts, membrillo.","d4.price":"€18",
+    "tag.veg":"Vegetarian","tag.seafood":"Seafood","tag.sharing":"Sharing","tag.signature":"Signature","tag.seasonal":"Seasonal","tag.classic":"Classic",
+    "amb.tag":"The Space","amb.h2a":"The","amb.h2b":"Atmosphere.",
+    "amb.sub":"A warm, living space — exposed brick, open flames, and the low hum of a room alive with conversation.",
+    "res.tag":"Reservations","res.h2a":"Join us","res.h2b":"at the table.",
+    "res.sub":"We recommend booking ahead, especially for weekends. Walk-ins welcome at the bar.",
+    "hours.mon":"Monday — Tuesday","hours.mon.time":"Closed",
+    "hours.tue":"Wednesday — Thursday","hours.tue.time":"13:00 — 23:00",
+    "hours.fri":"Friday — Saturday","hours.fri.time":"13:00 — 00:00",
+    "hours.sun":"Sunday","hours.sun.time":"13:00 — 22:00",
+    "form.title":"Make a Reservation",
+    "form.name":"Full Name","form.name.ph":"Your name",
+    "form.email":"Email","form.email.ph":"your@email.com",
+    "form.date":"Date","form.date.ph":"DD / MM / YYYY",
+    "form.time":"Time","form.time.ph":"19:30",
+    "form.guests":"Guests","form.occasion":"Occasion",
+    "form.occ.none":"No special occasion","form.occ.birthday":"Birthday","form.occ.anniversary":"Anniversary","form.occ.business":"Business Dinner",
+    "form.notes":"Special Requests","form.notes.ph":"Allergies, dietary requirements...",
+    "form.submit":"Confirm Reservation",
+    "loc.tag":"Find Us","loc.h2a":"We're in the","loc.h2b":"heart of Madrid.",
+    "loc.addr.label":"Address","loc.addr.value":"Calle de las Brasas, 7\n28013 Madrid, Spain",
+    "loc.phone.label":"Phone","loc.email.label":"Email",
+    "loc.park.label":"Parking","loc.park.value":"Valet available Friday & Saturday",
+    "loc.map":"Interactive Map",
+    "footer.about":"Wood-fire cooking rooted in Spanish tradition. Brasa has been a gathering place for lovers of honest food since 2011.",
+    "footer.c1.title":"Menu","footer.c1.l1":"Starters","footer.c1.l2":"Mains","footer.c1.l3":"Desserts","footer.c1.l4":"Reserve",
+    "footer.c2.title":"The Restaurant","footer.c2.l1":"Our Story","footer.c2.l2":"The Space","footer.c2.l3":"Private Dining","footer.c2.l4":"Location",
+    "footer.c3.title":"Info","footer.c3.l1":"Press","footer.c3.l2":"Careers","footer.c3.l3":"Privacy",
+    "footer.copy":"© 2025 Brasa Restaurant. All rights reserved."
+  },
+  de:{
+    "nav.menu":"Speisekarte","nav.story":"Unsere Geschichte","nav.ambience":"Ambiente","nav.reserve":"Tisch reservieren",
+    "hero.tag":"Moderne spanische Brasserie · Seit 2011","hero.h1a":"Feuer,","hero.h1b":"Geschmack & Seele.",
+    "hero.sub":"Verwurzelt in der spanischen Tradition, verfeinert durch eine moderne Hand. Brasa ist der Ort, wo das Holzfeuer auf die besten saisonalen Produkte trifft.",
+    "hero.cta1":"Tisch reservieren","hero.cta2":"Speisekarte ansehen",
+    "stats.est":"Gegründet","stats.michelin":"Michelin-Sterne","stats.dishes":"Saisonale Gerichte","stats.local":"Lokale Produkte",
+    "story.tag":"Unsere Geschichte","story.h2a":"Geboren aus","story.h2b":"der Glut.",
+    "story.p1":"Brasa entstand aus einer einfachen Idee: die spanische Tradition des Holzfeuer-Kochens zu ehren. Unsere offene Küche mit einem maßgefertigten Steinherd ist die Seele von allem, was wir tun.",
+    "story.p2":"Jedes Gericht schöpft aus dem Land — von den Olivenhainen Andalusiens bis zu den Fischmärkten San Sebastiáns. Wir kochen mit den Jahreszeiten, niemals dagegen.",
+    "story.years":"Jahre des Feuers","chef.name":"Carlos Mendoza","chef.title":"Küchenchef & Gründer",
+    "menu.tag":"Unser Angebot","menu.h2a":"Die","menu.h2b":"Speisekarte.",
+    "menu.sub":"Eine Karte, die sich mit den Jahreszeiten wandelt. Immer ehrlich, immer mit Intention zubereitet.",
+    "menu.tab1":"Vorspeisen","menu.tab2":"Hauptgerichte","menu.tab3":"Desserts",
+    "s1.name":"Tomate Asado","s1.desc":"Holzgeröstete Erbstücktomaten, Burrata, Basilikumöl, gereifter Sherry-Essig.","s1.price":"€14",
+    "s2.name":"Calamares a la Brasa","s2.desc":"Gegrillter Tintenfisch, Schwarzknoblauch-Aioli, Räucherpaprika, Zitrone.","s2.price":"€18",
+    "s3.name":"Tabla Ibérica","s3.desc":"Auswahl ibérischer Aufschnitt, Manchego, Quittenpaste, Sauerteigbrot.","s3.price":"€22",
+    "s4.name":"Ensalada de Temporada","s4.desc":"Saisonale Blätter, eingelegtes Gemüse, geröstete Mandeln, Jerez-Dressing.","s4.price":"€12",
+    "m1.name":"Chuletón a la Leña","m1.desc":"1kg trocken gereiftes galicisches Rinderrippe, geröstetes Knochenmark, Chimichurri.","m1.price":"€52",
+    "m2.name":"Lubina al Carbón","m2.desc":"Holzgegrillter Wolfsbarsch, Venusmuscheln, Safranbrühe, Queller.","m2.price":"€36",
+    "m3.name":"Pollo de Caserío","m3.desc":"Freilandhuhn, holzgeröstete Paprika, konfierter Knoblauch, Patatas Bravas.","m3.price":"€28",
+    "m4.name":"Coliflor Asada","m4.desc":"Ganzgerösteter Blumenkohl, Romesco, Haselnüsse, Kräuteröl.","m4.price":"€22",
+    "d1.name":"Crema Catalana","d1.desc":"Klassische gebrannte Creme, Zitrusschale, Zimt, saisonale Früchte.","d1.price":"€10",
+    "d2.name":"Tarta de Chocolate","d2.desc":"Warme dunkle Schokoladentarte, Salzkaramell, Crème fraîche.","d2.price":"€12",
+    "d3.name":"Helado de Temporada","d3.desc":"Hausgemachtes Eis, saisonales Fruchtkompott, Mandelkrümel.","d3.price":"€9",
+    "d4.name":"Tabla de Quesos","d4.desc":"Auswahl spanischer Käsesorten, Honig, Nüsse, Quittenpaste.","d4.price":"€18",
+    "tag.veg":"Vegetarisch","tag.seafood":"Meeresfrüchte","tag.sharing":"Zum Teilen","tag.signature":"Signature","tag.seasonal":"Saisonal","tag.classic":"Klassiker",
+    "amb.tag":"Der Raum","amb.h2a":"Das","amb.h2b":"Ambiente.",
+    "amb.sub":"Ein warmer, lebendiger Raum — freiliegender Backstein, offene Flammen und das leise Summen eines Raumes voller Gespräche.",
+    "res.tag":"Reservierungen","res.h2a":"Kommen Sie","res.h2b":"an unseren Tisch.",
+    "res.sub":"Wir empfehlen eine Voranmeldung, besonders an Wochenenden. Walk-ins an der Bar willkommen.",
+    "hours.mon":"Montag — Dienstag","hours.mon.time":"Geschlossen",
+    "hours.tue":"Mittwoch — Donnerstag","hours.tue.time":"13:00 — 23:00",
+    "hours.fri":"Freitag — Samstag","hours.fri.time":"13:00 — 00:00",
+    "hours.sun":"Sonntag","hours.sun.time":"13:00 — 22:00",
+    "form.title":"Tisch reservieren",
+    "form.name":"Name","form.name.ph":"Ihr Name",
+    "form.email":"E-Mail","form.email.ph":"ihre@email.de",
+    "form.date":"Datum","form.date.ph":"TT / MM / JJJJ",
+    "form.time":"Uhrzeit","form.time.ph":"19:30",
+    "form.guests":"Gäste","form.occasion":"Anlass",
+    "form.occ.none":"Kein besonderer Anlass","form.occ.birthday":"Geburtstag","form.occ.anniversary":"Jahrestag","form.occ.business":"Geschäftsessen",
+    "form.notes":"Besondere Wünsche","form.notes.ph":"Allergien, Ernährungsanforderungen...",
+    "form.submit":"Reservierung bestätigen",
+    "loc.tag":"Besuchen Sie uns","loc.h2a":"Wir sind im","loc.h2b":"Herzen Madrids.",
+    "loc.addr.label":"Adresse","loc.addr.value":"Calle de las Brasas, 7\n28013 Madrid, Spanien",
+    "loc.phone.label":"Telefon","loc.email.label":"E-Mail",
+    "loc.park.label":"Parken","loc.park.value":"Valet-Service Fr. & Sa.",
+    "loc.map":"Interaktive Karte",
+    "footer.about":"Holzfeuer-Küche verwurzelt in der spanischen Tradition. Brasa ist seit 2011 ein Treffpunkt für Liebhaber ehrlicher Küche.",
+    "footer.c1.title":"Speisekarte","footer.c1.l1":"Vorspeisen","footer.c1.l2":"Hauptgerichte","footer.c1.l3":"Desserts","footer.c1.l4":"Reservieren",
+    "footer.c2.title":"Das Restaurant","footer.c2.l1":"Unsere Geschichte","footer.c2.l2":"Der Raum","footer.c2.l3":"Private Dining","footer.c2.l4":"Lage",
+    "footer.c3.title":"Info","footer.c3.l1":"Presse","footer.c3.l2":"Karriere","footer.c3.l3":"Datenschutz",
+    "footer.copy":"© 2025 Brasa Restaurant. Alle Rechte vorbehalten."
+  },
+  es:{
+    "nav.menu":"Carta","nav.story":"Nuestra Historia","nav.ambience":"Ambiente","nav.reserve":"Reservar Mesa",
+    "hero.tag":"Brasserie Española Moderna · Desde 2011","hero.h1a":"Fuego,","hero.h1b":"Sabor y Alma.",
+    "hero.sub":"Arraigado en la tradición española, refinado por una mano moderna. Brasa es donde el fuego de leña se encuentra con los mejores productos de temporada.",
+    "hero.cta1":"Reservar Mesa","hero.cta2":"Ver la Carta",
+    "stats.est":"Fundado","stats.michelin":"Estrellas Michelin","stats.dishes":"Platos de Temporada","stats.local":"Producto Local",
+    "story.tag":"Nuestra Historia","story.h2a":"Nacido de","story.h2b":"las brasas.",
+    "story.p1":"Brasa nació de una idea simple: honrar la tradición española de cocinar con leña sin disculpas. Nuestra cocina abierta, centrada en un hogar de piedra construido a medida, es el alma de todo lo que hacemos.",
+    "story.p2":"Cada plato bebe de la tierra — desde los olivares de Andalucía hasta los mercados de pescado de San Sebastián. Cocinamos con las estaciones, nunca en su contra.",
+    "story.years":"Años de Fuego","chef.name":"Carlos Mendoza","chef.title":"Chef Ejecutivo & Fundador",
+    "menu.tag":"Lo que Servimos","menu.h2a":"La","menu.h2b":"Carta.",
+    "menu.sub":"Una carta que cambia con las estaciones. Siempre honesta, siempre cocinada con intención.",
+    "menu.tab1":"Entrantes","menu.tab2":"Principales","menu.tab3":"Postres",
+    "s1.name":"Tomate Asado","s1.desc":"Tomates de variedad tradicional asados a la leña, burrata, aceite de albahaca, vinagre de Jerez añejo.","s1.price":"€14",
+    "s2.name":"Calamares a la Brasa","s2.desc":"Calamar a la brasa, alioli de ajo negro, pimentón ahumado, limón.","s2.price":"€18",
+    "s3.name":"Tabla Ibérica","s3.desc":"Selección de embutidos ibéricos, Manchego, membrillo, pan de masa madre.","s3.price":"€22",
+    "s4.name":"Ensalada de Temporada","s4.desc":"Hojas de temporada, encurtidos, almendras tostadas, aliño de Jerez.","s4.price":"€12",
+    "m1.name":"Chuletón a la Leña","m1.desc":"Chuletón de ternera gallega madurada 1kg, tuétano asado, chimichurri.","m1.price":"€52",
+    "m2.name":"Lubina al Carbón","m2.desc":"Lubina a la brasa, almejas, caldo de azafrán, salicornia.","m2.price":"€36",
+    "m3.name":"Pollo de Caserío","m3.desc":"Pollo de corral, pimientos asados a la leña, ajo confitado, patatas bravas.","m3.price":"€28",
+    "m4.name":"Coliflor Asada","m4.desc":"Coliflor entera asada, romesco, avellanas, aceite de hierbas.","m4.price":"€22",
+    "d1.name":"Crema Catalana","d1.desc":"Crema catalana clásica, ralladura de cítricos, canela, fruta de temporada.","d1.price":"€10",
+    "d2.name":"Tarta de Chocolate","d2.desc":"Tarta de chocolate negro tibio, caramelo salado, crème fraîche.","d2.price":"€12",
+    "d3.name":"Helado de Temporada","d3.desc":"Helado artesano, compota de fruta de temporada, crumble de almendra.","d3.price":"€9",
+    "d4.name":"Tabla de Quesos","d4.desc":"Selección de quesos artesanos españoles, miel, frutos secos, membrillo.","d4.price":"€18",
+    "tag.veg":"Vegetariano","tag.seafood":"Marisco","tag.sharing":"Para compartir","tag.signature":"Firma","tag.seasonal":"De temporada","tag.classic":"Clásico",
+    "amb.tag":"El Espacio","amb.h2a":"El","amb.h2b":"Ambiente.",
+    "amb.sub":"Un espacio cálido y vivo — ladrillo visto, llamas abiertas y el suave murmullo de una sala llena de conversación.",
+    "res.tag":"Reservas","res.h2a":"Únete a nosotros","res.h2b":"en la mesa.",
+    "res.sub":"Recomendamos reservar con antelación, especialmente los fines de semana. Walk-ins bienvenidos en la barra.",
+    "hours.mon":"Lunes — Martes","hours.mon.time":"Cerrado",
+    "hours.tue":"Miércoles — Jueves","hours.tue.time":"13:00 — 23:00",
+    "hours.fri":"Viernes — Sábado","hours.fri.time":"13:00 — 00:00",
+    "hours.sun":"Domingo","hours.sun.time":"13:00 — 22:00",
+    "form.title":"Hacer una Reserva",
+    "form.name":"Nombre","form.name.ph":"Tu nombre",
+    "form.email":"Email","form.email.ph":"tu@email.com",
+    "form.date":"Fecha","form.date.ph":"DD / MM / AAAA",
+    "form.time":"Hora","form.time.ph":"19:30",
+    "form.guests":"Comensales","form.occasion":"Ocasión",
+    "form.occ.none":"Sin ocasión especial","form.occ.birthday":"Cumpleaños","form.occ.anniversary":"Aniversario","form.occ.business":"Cena de negocios",
+    "form.notes":"Peticiones especiales","form.notes.ph":"Alergias, necesidades dietéticas...",
+    "form.submit":"Confirmar Reserva",
+    "loc.tag":"Encuéntranos","loc.h2a":"Estamos en el","loc.h2b":"corazón de Madrid.",
+    "loc.addr.label":"Dirección","loc.addr.value":"Calle de las Brasas, 7\n28013 Madrid, España",
+    "loc.phone.label":"Teléfono","loc.email.label":"Email",
+    "loc.park.label":"Aparcamiento","loc.park.value":"Valet disponible viernes y sábado",
+    "loc.map":"Mapa Interactivo",
+    "footer.about":"Cocina de leña arraigada en la tradición española. Brasa es un punto de encuentro para los amantes de la cocina honesta desde 2011.",
+    "footer.c1.title":"Carta","footer.c1.l1":"Entrantes","footer.c1.l2":"Principales","footer.c1.l3":"Postres","footer.c1.l4":"Reservar",
+    "footer.c2.title":"El Restaurante","footer.c2.l1":"Nuestra Historia","footer.c2.l2":"El Espacio","footer.c2.l3":"Privado","footer.c2.l4":"Ubicación",
+    "footer.c3.title":"Info","footer.c3.l1":"Prensa","footer.c3.l2":"Empleo","footer.c3.l3":"Privacidad",
+    "footer.copy":"© 2025 Brasa Restaurante. Todos los derechos reservados."
+  }
+};
+
+let currentLang='en';
+function setLang(lang){
+  currentLang=lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===lang.toUpperCase()));
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(i18n[lang][k]!==undefined)el.textContent=i18n[lang][k];});
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const k=el.getAttribute('data-i18n-placeholder');if(i18n[lang][k])el.placeholder=i18n[lang][k];});
+  document.documentElement.lang=lang;
+}
+function setTab(tab){
+  document.querySelectorAll('.menu-tab').forEach((t,i)=>t.classList.toggle('active',['starters','mains','desserts'][i]===tab));
+  document.querySelectorAll('.menu-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+window.addEventListener('scroll',()=>document.getElementById('mainNav').classList.toggle('scrolled',window.scrollY>60));
+setLang('en');
+</script>
+</body>
+</html>
