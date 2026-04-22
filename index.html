@@ -34,8 +34,7 @@
   .hero{height:100vh;min-height:680px;position:relative;display:flex;align-items:center;overflow:hidden;}
   .hero-bg{
     position:absolute;inset:0;
-    /* HERO IMAGE: replace with: background: linear-gradient(105deg,rgba(30,26,22,.8) 0%,rgba(30,26,22,.35) 60%,transparent 100%), url('images/hero.jpg') center/cover no-repeat; */
-    background:linear-gradient(105deg,rgba(30,26,22,.9) 0%,rgba(30,26,22,.5) 55%,rgba(92,46,26,.7) 100%),radial-gradient(ellipse at 70% 50%,#5c2e1a 0%,#1e1a16 70%);
+    background:linear-gradient(105deg,rgba(30,26,22,.8) 0%,rgba(30,26,22,.35) 60%,transparent 100%), url('images/hero.webp') center/cover no-repeat;
   }
   .hero-content{position:relative;z-index:2;padding:0 48px;max-width:700px;}
   .hero-tag{display:inline-flex;align-items:center;gap:12px;font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--terra-light);margin-bottom:28px;}
@@ -231,8 +230,7 @@
 <section class="story" id="story">
   <div class="story-inner">
     <div class="story-img">
-      <!-- SWAP: <img src="images/story.jpg" alt="Chef at the hearth" style="width:100%;height:100%;object-fit:cover"> -->
-      <div class="story-img-placeholder">Photo · Story</div>
+      <picture><source srcset="images/story.webp" type="image/webp"><img src="images/story.jpg" alt="Restaurant interior" style="width:100%;height:100%;object-fit:cover" loading="lazy"></picture>
       <div class="story-img-accent">
         <span class="year">13</span>
         <span class="since" data-i18n="story.years"></span>
@@ -245,7 +243,7 @@
       <p data-i18n="story.p2"></p>
       <div class="chef-sig">
         <div class="chef-avatar">
-          <!-- SWAP: <img src="images/chef.jpg" style="width:100%;height:100%;object-fit:cover"> -->
+          <picture><source srcset="images/chef.webp" type="image/webp"><img src="images/chef.jpg" alt="Chef" style="width:100%;height:100%;object-fit:cover" loading="lazy"></picture>
           👨‍🍳
         </div>
         <div class="chef-info">
@@ -349,12 +347,11 @@
     <p data-i18n="amb.sub"></p>
   </div>
   <div class="ambience-grid">
-    <!-- SWAP each amb-img-ph with <img src="images/amb-X.jpg" style="width:100%;height:100%;object-fit:cover"> -->
-    <div class="amb-img"><div class="amb-img-ph">Photo · Interior</div></div>
-    <div class="amb-img"><div class="amb-img-ph">Photo · Bar</div></div>
-    <div class="amb-img"><div class="amb-img-ph">Photo · Terrace</div></div>
-    <div class="amb-img"><div class="amb-img-ph">Photo · Kitchen</div></div>
-    <div class="amb-img"><div class="amb-img-ph">Photo · Detail</div></div>
+    <div class="amb-img"><picture><source srcset="images/amb-1.webp" type="image/webp"><img src="images/amb-1.jpg" alt="Interior" style="width:100%;height:100%;object-fit:cover" loading="lazy"></picture></div>
+    <div class="amb-img"><picture><source srcset="images/amb-2.webp" type="image/webp"><img src="images/amb-2.jpg" alt="Bar" style="width:100%;height:100%;object-fit:cover" loading="lazy"></picture></div>
+    <div class="amb-img"><picture><source srcset="images/amb-3.webp" type="image/webp"><img src="images/amb-3.jpg" alt="Exterior" style="width:100%;height:100%;object-fit:cover" loading="lazy"></picture></div>
+    <div class="amb-img"><picture><source srcset="images/amb-4.webp" type="image/webp"><img src="images/amb-4.jpg" alt="Kitchen" style="width:100%;height:100%;object-fit:cover" loading="lazy"></picture></div>
+    <div class="amb-img"><picture><source srcset="images/amb-5.webp" type="image/webp"><img src="images/amb-5.jpg" alt="Detail" style="width:100%;height:100%;object-fit:cover" loading="lazy"></picture></div>
   </div>
 </section>
 
